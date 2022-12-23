@@ -1,0 +1,36 @@
+Направления: 
+1. Добавьте этот скрипт в любую игру, используя инжектор Lua, такой как JJSploit. 
+2. Нажмите левый ctrl + щелкните туда, куда вы хотите телепортироваться
+Повторно запустите скрипт, чтобы переключить телепорт щелчком мыши.
+]]
+
+--Убеждается, что этот скрипт выполняется только один раз
+if _G.WRDClickTeleport == nil then
+	_G.WRDClickTeleport = true
+	
+	local player = game:GetService("Players").LocalPlayer
+	local UserInputService = game:GetService("UserInputService")
+	 --Хотелось избежать использования экземпляра мыши, но UIS^ очень утомительно получать позицию нажатия мыши
+	local mouse = player:GetMouse()
+
+	--Ждет, пока мышь игрока не будет найдена
+	repeat wait() until mouse
+	
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			--Only click teleport if the toggle is enabled
+			if _G.WRDClickTeleport and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+				player.Character:MoveTo(Vector3.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)) 
+			end
+		end
+	end)
+--Просто переключите вместо повторного выполнения скрипта
+else
+	_G.WRDClickTeleport = not _G.WRDClickTeleport
+	--Notify
+	if _G.WRDClickTeleport then
+		game.StarterGui:SetCore("SendNotification", {Title="WeAreDevs.net"; Text="Нажмите телепорт включен"; Duration=5;})
+	else
+		game.StarterGui:SetCore("SendNotification", {Title="WeAreDevs.net"; Text="Нажмите телепорт отключен"; Duration=5;})
+	end
+end
